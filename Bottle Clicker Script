@@ -1,0 +1,129 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+
+
+public class BottleClicker : MonoBehaviour
+{
+    // Bottle Variables
+    public GameObject Level1;
+    public GameObject bottle;
+    private int health = 10;
+    public GameObject BrokenBottlePrefab;
+    public GameObject Hitbox;
+    public float particleTime;
+    public GameObject Vase;
+    public AudioSource clickEffect;
+    public Slider healthBar;
+    
+    //ScreenShake Variables
+    private float shakeDuration = 0.1f;
+    private float shakeIntensity = 0.02f;
+    private float shakeTime = 0f;
+    private Vector3 originalPosition;
+
+    //Text Variables
+    public TMPro.TextMeshProUGUI levelText;
+    public TMPro.TextMeshProUGUI timerText;
+
+    //Level Timer Variables
+    private float levelNumber;
+    private float Level1TimeLeft;
+
+    //Money Variables
+    private Money playerMoney;
+
+    private void Start()
+    {
+        Level1TimeLeft = 5.0f;
+        healthBar.maxValue = 10.0f;
+	    healthBar.value = 10.0f;
+        originalPosition = transform.position;
+        
+    }
+    void Update()
+    {
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hitInfo;
+
+            if (bottle.GetComponent<Collider>().Raycast(ray, out hitInfo, float.MaxValue))
+            {
+                Debug.Log("CLICK");
+
+                health--;
+                healthBar.value--;
+
+                if (health > 0)
+                {
+                    clickEffect.Play();
+                }
+
+                if (health <= 0)
+                {
+                    bottle.SetActive(false);
+                    Hitbox.SetActive(true);
+                    Hitbox.GetComponent<MeshRenderer>().enabled = false;
+                    BrokenBottlePrefab.SetActive(true);
+                }
+            }
+        }
+
+        if (Level1.activeInHierarchy)
+        {
+            levelNumber = 1.0f;
+            levelText.SetText("LEVEL: " + levelNumber);
+            Level1TimeLeft -= Time.deltaTime;
+            timerText.SetText("TIME LEFT: " + Mathf.Round(Level1TimeLeft));
+
+            if (Level1TimeLeft <= 0.0f)
+            {
+                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex - 1);
+            }
+
+            if (health <= 0)
+            {
+                Level1TimeLeft = Time.timeScale;
+                timerText.SetText("LEVEL COMPLETED");
+            }
+            
+        }
+        
+        if (health <= 0)
+        {
+            particleTime -= Time.deltaTime;
+        }
+
+        if (particleTime <= 0)
+        {
+            Level1.SetActive(false);
+            Vase.SetActive(true);
+        }
+        {
+            if (Input.GetMouseButtonDown(0))
+            {
+                shakeTime = shakeDuration;
+            }
+
+            if (shakeTime > 0f)
+            {
+                float shakeX = Random.Range(-shakeIntensity, shakeIntensity);
+                float shakeY = Random.Range(-shakeIntensity, shakeIntensity);
+
+                transform.position = originalPosition + new Vector3(shakeX, shakeY, 0f);
+
+                shakeTime -= Time.deltaTime;
+            }
+            else
+            {
+                transform.position = originalPosition;
+            }
+        }
+    }
+
+}
+
