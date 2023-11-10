@@ -1,0 +1,27 @@
+using System.Collections;
+using UnityEngine;
+
+public class Spawner : MonoBehaviour
+{
+    public GameObject VaseSpawn;
+    private float lastSpawnTime;
+    private Vector3 spawnPosition;
+
+    void Start()
+    {
+        lastSpawnTime = Time.time;
+        spawnPosition = new Vector3(0,7.63000011f,-13.2799997f);
+    }
+
+    void Update()
+    {
+        if (Time.time - lastSpawnTime > 5f)
+        {
+            GameObject spawnedObject = Instantiate(VaseSpawn, spawnPosition, transform.rotation);
+            lastSpawnTime = Time.time;
+
+            Destroy(spawnedObject, 6.25f);
+        }
+
+    }
+}
