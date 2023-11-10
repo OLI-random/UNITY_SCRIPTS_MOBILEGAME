@@ -1,0 +1,53 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using TMPro;
+
+public class Purchase : MonoBehaviour
+{
+    public TextMeshProUGUI cost;
+    public TextMeshProUGUI dmg;
+    public AudioClip wrong;
+    public static float damage = 1.0f;
+    public static int damageCost = 10;
+
+    // Start is called before the first frame update
+    void Start()
+    {
+	// Reset Players purchases
+    PlayerPrefs.SetFloat("purDamage", 1.0f);
+	  PlayerPrefs.SetInt("purDamageCost", 10);
+    
+	  damage = PlayerPrefs.GetFloat("purDamage", damage);
+	  damageCost = PlayerPrefs.GetInt("purDamageCost", damageCost);
+    cost.SetText("COST: " + damageCost);
+    dmg.SetText("TAP DMG: " + damage + "x");
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        
+    }
+
+    public void Buy()
+    {
+        if(Money.playerMoney >= damageCost)
+        {
+            Money.playerMoney -= damageCost;
+            damageCost *= 2;
+            damage *= 1.2f;
+            cost.SetText("COST: " + damageCost);
+            dmg.SetText("TAP DMG: " + (Mathf.Round(damage * 100) / 100) + "x");
+        }
+
+        if(Money.playerMoney < damageCost)
+        {
+            Debug.Log("INSUFFECIENT FUNDS");
+        }
+
+	PlayerPrefs.SetFloat("purDamage", damage);
+	PlayerPrefs.SetInt("purDamageCost", damageCost);
+    }
+
+}
